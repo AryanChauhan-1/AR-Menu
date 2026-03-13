@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Restaurant AR Dish</title>
+
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:black;
+font-family:sans-serif;
+}
+
+#overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+background:black;
+z-index:10;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="overlay">Tap anywhere to start AR</div>
+
+<a-scene
+xr-mode-ui="enabled:false"
+vr-mode-ui="enabled:false"
+renderer="logarithmicDepthBuffer:true;"
+webxr="requiredFeatures: hit-test; optionalFeatures: dom-overlay;"
+>
+
+<a-camera position="0 1.6 0"></a-camera>
+
+<!-- RETICLE -->
+<a-ring
+id="reticle"
+radius-inner="0.07"
+radius-outer="0.09"
+color="#00FFFF"
+rotation="-90 0 0"
+visible="false">
+</a-ring>
+
+<!-- MODEL ROOT -->
+<a-entity id="modelRoot" visible="false">
+
+<a-gltf-model
+id="dish"
+src="/final models/snacks/Spring Roll.glb"
+scale="0.25 0.25 0.25"
+rotation="0 0 0">
+</a-gltf-model>
+
+<a-entity
+position="0 0.25 0"
+text="value: Butter Chicken ₹299; align:center; width:2; color:#FFFFFF">
+</a-entity>
+
+</a-entity>
+
+</a-scene>
+
+<script>
+
+let xrSession
+let hitTestSource
+let refSpace
+let viewerSpace
+
+let modelPlaced=false
+let stableFrames=0
+
+const overlay=document.getElementById("overlay")
+
+overlay.addEventListener("click",startAR)
+
+async function startAR(){
+
+overlay.style.display="none"
+
+const scene=document.querySelector("a-scene")
+const renderer=scene.renderer
+
+if(!navigator.xr){
+console.log("WebXR not supported")
+return
+}
+
+xrSession=await navigator.xr.requestSession("immersive-ar",{
+requiredFeatures:["hit-test"],
+optionalFeatures:["dom-overlay"],
+domOverlay:{root:document.body}
+})
+
+renderer.xr.setReferenceSpaceType("local")
+await renderer.xr.setSession(xrSession)
+
+refSpace=await xrSession.requestReferenceSpace("local")
+viewerSpace=await xrSession.requestReferenceSpace("viewer")
+
+hitTestSource=await xrSession.requestHitTestSource({
+space:viewerSpace
+})
+
+xrSession.requestAnimationFrame(onXRFrame)
+
+console.log("AR Session Started")
+
+}
+
+function onXRFrame(t,frame){
+
+const session=frame.session
+session.requestAnimationFrame(onXRFrame)
+
+if(!hitTestSource) return
+
+const hitTestResults=frame.getHitTestResults(hitTestSource)
+
+const reticle=document.getElementById("reticle")
+
+if(hitTestResults.length>0){
+
+const hit=hitTestResults[0]
+const pose=hit.getPose(refSpace)
+
+reticle.visible=true
+
+reticle.object3D.position.set(
+pose.transform.position.x,
+pose.transform.position.y,
+pose.transform.position.z
+)
+
+stableFrames++
+
+if(stableFrames>30 && !modelPlaced){
+placeModel(reticle.object3D.position)
+}
+
+}else{
+
+reticle.visible=false
+stableFrames=0
+
+}
+
+}
+
+function placeModel(position){
+
+const modelRoot=document.getElementById("modelRoot")
+
+modelRoot.object3D.position.copy(position)
+
+modelRoot.visible=true
+
+modelPlaced=true
+
+console.log("Dish placed on table")
+
+}
+
+const dish=document.getElementById("dish")
+
+let dragging=false
+let lastX=0
+let rotationY=0
+
+window.addEventListener("touchstart",e=>{
+dragging=true
+lastX=e.touches[0].clientX
+})
+
+window.addEventListener("touchmove",e=>{
+
+if(!dragging) return
+
+const delta=e.touches[0].clientX-lastX
+lastX=e.touches[0].clientX
+
+rotationY+=delta*0.5
+
+dish.object3D.rotation.y=THREE.MathUtils.degToRad(rotationY)
+
+})
+
+window.addEventListener("touchend",()=>{
+dragging=false
+})
+
+</script>
+
+</body>
+</html>
