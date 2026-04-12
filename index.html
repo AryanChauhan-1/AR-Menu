@@ -182,6 +182,15 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #060606; }
   transition: transform 0.6s ease;
 }
 .dish-card:active .card-img { transform: scale(1.03); }
+.card-img.has-photo + .card-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.08) 0%,
+    rgba(0,0,0,0.15) 35%,
+    rgba(0,0,0,0.82) 72%,
+    rgba(0,0,0,0.96) 100%
+  );
+}
 
 /* Card overlay gradient */
 .card-overlay {
@@ -614,13 +623,14 @@ model-viewer {
    - category    : Must match one of the categories array
    - description : 1–2 sentence description
    - tags        : Array of tags from: 'veg','dairy','spicy','gf','nuts'
+   - imageUrl    : Path to your food photo (JPG/PNG, keep under 400KB) e.g. "images/starters/Spring-Roll.jpg"
    - modelUrl    : Path or URL to your .glb file (leave "" until ready)
    - iosUrl      : Path or URL to your .usdz file for iOS AR (leave "" until ready)
    - color       : Accent colour for card background (CSS linear-gradient string)
    - emoji       : Placeholder visual until model is ready
 */
 
-const RESTAURANT_NAME = "AHARA";  /* ← Change this */
+const RESTAURANT_NAME = "The Restaurant";  /* ← Change this */
 const RESTAURANT_TAGLINE = "Est. 2024 · Fine Dining"; /* ← Change this */
 
 const CATEGORIES = ["All", "Starters", "Mains", "Desserts", "Drinks"];
@@ -628,48 +638,52 @@ const CATEGORIES = ["All", "Starters", "Mains", "Desserts", "Drinks"];
 const MENU = [
   {
     id: "dish-01",
-    name: "VEG THALI",
+    name: "Saffron Shorba",
     price: "₹480",
-    category: "Mains",
+    category: "Starters",
     description: "Delicate broth of saffron, roasted tomato and spiced cream, finished with a thread of gold oil.",
-    tags: ["veg",],
-    modelUrl: "final_models/main_course/Thali-1.glb",   /* ← Add your .glb URL here */
+    tags: ["veg", "dairy"],
+    imageUrl: "final_models/snacks/spring.png",   /* ← Add your food photo path here e.g. "images/starters/Spring-Roll.jpg" */
+    modelUrl: "final_models/snacks/spring.glb",   /* ← Add your .glb URL here */
     iosUrl: "",     /* ← Add your .usdz URL here */
     color: "linear-gradient(145deg,#1a1008,#2d1f0a,#1a120a)",
     emoji: "🥣"
   },
   {
     id: "dish-02",
-    name: "VEG THALI MEGA",
+    name: "Smoked Burrata",
     price: "₹680",
-    category: "Mains",
+    category: "Starters",
     description: "Cold-smoked burrata on charred sourdough, heirloom tomato compote, micro basil, aged balsamic.",
-    tags: ["veg", ],
-    modelUrl: "final_models/main_course/Thali-2.glb",
+    tags: ["veg", "dairy", "nuts"],
+    imageUrl: "",
+    modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#0f1208,#1c2010,#0f1208)",
     emoji: "🧀"
   },
   {
     id: "dish-03",
-    name: "Paneer Tikka",
+    name: "Prawn Tikka",
     price: "₹820",
     category: "Starters",
     description: "Tiger prawns marinated in smoked paprika and hung curd, finished in a tandoor, served with kokum chutney.",
-    tags: ["spicy",],
-    modelUrl: "final_models/snacks/paneer-tikka.glb",
+    tags: ["spicy", "dairy"],
+    imageUrl: "",
+    modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#1a0c08,#2a1410,#1a0c08)",
     emoji: "🦐"
   },
   {
     id: "dish-04",
-    name: "Spring Roll",
+    name: "Truffle Risotto",
     price: "₹1,840",
-    category: "Starters",
+    category: "Mains",
     description: "Arborio rice, aged parmigiano, black truffle shavings, 24-hour bone broth reduction.",
-    tags: ["veg", ],
-    modelUrl: "final_models/snacks/Spring-Roll.glb",
+    tags: ["veg", "dairy"],
+    imageUrl: "",
+    modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#14100a,#22180e,#14100a)",
     emoji: "🍚"
@@ -681,6 +695,7 @@ const MENU = [
     category: "Mains",
     description: "Slow-roasted leg of lamb, 12-hour dum preparation, saffron jus, pomegranate raita.",
     tags: ["spicy"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#180a08,#2a1010,#180a08)",
@@ -693,6 +708,7 @@ const MENU = [
     category: "Mains",
     description: "Saikyo miso-marinated black cod, yuzu beurre blanc, pickled cucumber, sesame crisp.",
     tags: ["dairy", "gf"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#080e18,#0c1628,#080e18)",
@@ -705,6 +721,7 @@ const MENU = [
     category: "Mains",
     description: "Black lentils, wild porcini, smoked butter, crispy shallots, house-made kulcha.",
     tags: ["veg", "dairy"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#101008,#1c1c0c,#101008)",
@@ -717,6 +734,7 @@ const MENU = [
     category: "Desserts",
     description: "Rose water panna cotta, raspberry coulis, crystallised rose petals, pistachio dust.",
     tags: ["veg", "dairy", "nuts"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#180818,#2a0e2a,#180818)",
@@ -729,6 +747,7 @@ const MENU = [
     category: "Desserts",
     description: "Valrhona 70% sphere, filled with salted caramel, dissolved tableside with warm toffee sauce.",
     tags: ["veg", "dairy"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#100808,#1c0e0e,#100808)",
@@ -741,6 +760,7 @@ const MENU = [
     category: "Drinks",
     description: "Traditional green tea with saffron, cardamom, cinnamon and slivered almonds. Served hot.",
     tags: ["veg", "nuts"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#141008,#201808,#141008)",
@@ -753,6 +773,7 @@ const MENU = [
     category: "Drinks",
     description: "Bourbon, demerara, cherry bitters, smoked live with applewood under a glass cloche.",
     tags: [],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#180e08,#281808,#180e08)",
@@ -765,6 +786,7 @@ const MENU = [
     category: "Drinks",
     description: "Whipped yoghurt, fresh passion fruit pulp, cardamom sugar, edible gold flake.",
     tags: ["veg", "dairy"],
+    imageUrl: "",
     modelUrl: "",
     iosUrl: "",
     color: "linear-gradient(145deg,#181008,#281c08,#181008)",
@@ -850,9 +872,13 @@ function buildCarousel() {
     const card = document.createElement('div');
     card.className = 'dish-card ' + (i === state.carouselIndex ? 'active-card' : 'side');
     card.dataset.index = i;
+    const hasPhoto = !!dish.imageUrl;
+    const imgStyle = hasPhoto
+      ? `background-image:url('${dish.imageUrl}');`
+      : `background:${dish.color}`;
     card.innerHTML = `
-      <div class="card-img" style="background:${dish.color}"></div>
-      <div class="food-illustration">${dish.emoji}</div>
+      <div class="card-img ${hasPhoto ? 'has-photo' : ''}" style="${imgStyle}"></div>
+      ${!hasPhoto ? `<div class="food-illustration">${dish.emoji}</div>` : ''}
       <div class="card-overlay"></div>
       <div class="card-tap-ring"><span class="card-tap-arrow">↗</span></div>
       <div class="card-content">
