@@ -2,1127 +2,963 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#060606">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<title>The Restaurant — Menu</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ahara — Menu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <style>
 
-/* ── RESET & BASE ─────────────────────────────────────────── */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { width: 100%; height: 100%; overflow: hidden; background: #060606; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:#060606;overflow:hidden;overscroll-behavior:none}
 
-:root {
-  --gold: #c9983a;
-  --gold-light: #e8b84b;
-  --gold-dim: rgba(201,152,58,0.18);
-  --cream: #f5f0e8;
-  --bg: #060606;
-  --bg2: #0d0d0d;
-  --bg3: #111;
-  --text: #f0ebe0;
-  --text-dim: rgba(240,235,224,0.45);
-  --text-muted: rgba(240,235,224,0.25);
-  --border: rgba(255,255,255,0.07);
-  --panel-bg: rgba(8,8,8,0.92);
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'Outfit', sans-serif;
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-expo: cubic-bezier(0.7, 0, 0.84, 0);
+:root{
+  --gold:#c9983a;
+  --gold-light:#e8b84b;
+  --cream:#f5f0e8;
+  --bg:#060606;
+  --text-dim:rgba(245,240,232,0.45);
+  --text-muted:rgba(245,240,232,0.22);
+  --panel-bg:rgba(7,7,7,0.95);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --font-d:'Cormorant Garamond',Georgia,serif;
+  --font-b:'DM Sans',sans-serif;
+  --expo:cubic-bezier(0.16,1,0.3,1);
 }
 
-/* ── APP SHELL ────────────────────────────────────────────── */
-#app {
-  width: 100vw; height: 100vh;
-  position: relative; overflow: hidden;
+#app{width:100vw;height:100vh;position:relative;overflow:hidden}
+
+.screen{position:absolute;inset:0}
+
+/* ── HOME ──────────────────────────────────────────────────── */
+#home{z-index:1;background:var(--bg)}
+#home-scroll{
+  position:absolute;inset:0;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+#home-scroll::-webkit-scrollbar{display:none}
+
+/* Ambient orbs */
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(90px)}
+.o1{width:340px;height:340px;top:-100px;left:-80px;
+  background:radial-gradient(circle,rgba(201,152,58,0.15),transparent 70%);
+  animation:o1f 20s ease-in-out infinite}
+.o2{width:260px;height:260px;bottom:25%;right:-80px;
+  background:radial-gradient(circle,rgba(201,152,58,0.09),transparent 70%);
+  animation:o2f 25s ease-in-out infinite 4s}
+.o3{width:200px;height:200px;top:50%;left:5%;
+  background:radial-gradient(circle,rgba(160,100,20,0.07),transparent 70%);
+  animation:o3f 30s ease-in-out infinite 8s}
+
+@keyframes o1f{0%,100%{transform:translate(0,0) scale(1);opacity:.55}
+  40%{transform:translate(50px,70px) scale(1.12);opacity:.8}
+  70%{transform:translate(-20px,30px) scale(.92);opacity:.5}}
+@keyframes o2f{0%,100%{transform:translate(0,0);opacity:.45}
+  50%{transform:translate(-45px,-55px) scale(1.1);opacity:.65}}
+@keyframes o3f{0%,100%{transform:translate(0,0);opacity:.35}
+  50%{transform:translate(35px,-45px);opacity:.55}}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero{
+  position:relative;z-index:2;
+  padding:calc(58px + var(--safe-t)) 26px 32px;
+  will-change:transform,opacity;
+}
+.hero-tag{
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:5px;text-transform:uppercase;
+  color:var(--gold);opacity:.7;margin-bottom:10px;
+  animation:fup .9s var(--expo) .1s both;
+}
+.hero-name{
+  font-family:var(--font-d);font-size:50px;font-weight:300;
+  color:var(--cream);line-height:.95;letter-spacing:-1.5px;
+  animation:fup .9s var(--expo) .15s both;
+}
+.hero-name em{font-style:italic;color:var(--gold-light);font-weight:400}
+.hero-quote{
+  font-family:var(--font-d);font-size:13px;font-weight:300;font-style:italic;
+  color:var(--text-dim);line-height:1.65;
+  margin-top:14px;padding-left:14px;
+  border-left:1px solid rgba(201,152,58,.28);
+  animation:fup .9s var(--expo) .22s both;
+}
+.hero-rule{
+  display:flex;align-items:center;gap:10px;margin-top:22px;
+  animation:fin .8s ease .3s both;
+}
+.hero-line{flex:1;height:.5px;background:linear-gradient(90deg,rgba(201,152,58,.35),transparent)}
+.hero-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.45}
+
+/* ── FEATURED ────────────────────────────────────────────── */
+.feat-wrap{
+  position:relative;z-index:2;
+  padding:0 26px 26px;
+  animation:fup .9s var(--expo) .32s both;
+}
+.feat-label{
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold);opacity:.65;margin-bottom:10px;
+}
+.feat-card{
+  position:relative;width:100%;height:196px;
+  border-radius:20px;overflow:hidden;cursor:pointer;
+  border:.5px solid rgba(255,255,255,.08);
+  transition:transform .3s var(--expo);
+}
+.feat-card:active{transform:scale(.97)}
+.feat-img{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  transition:transform .5s ease;
+}
+.feat-card:active .feat-img{transform:scale(1.05)}
+.feat-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(110deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.3) 55%,transparent 100%);
+}
+.feat-shimmer{
+  position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.055) 50%,transparent 60%);
+  background-size:220% 100%;
+  animation:shim 3.5s ease-in-out infinite 1s;
+}
+@keyframes shim{0%{background-position:220% 0}100%{background-position:-220% 0}}
+.feat-arrow{
+  position:absolute;top:14px;right:14px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.09);
+  border:.5px solid rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:rgba(255,255,255,.7);
+  backdrop-filter:blur(8px);
+}
+.feat-body{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:18px 18px 18px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+}
+.feat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--font-b);font-size:8px;font-weight:400;
+  letter-spacing:2px;text-transform:uppercase;color:#fff;
+  background:rgba(201,152,58,.82);
+  padding:4px 10px;border-radius:20px;
+  margin-bottom:7px;
+}
+.feat-dish-name{
+  font-family:var(--font-d);font-size:25px;font-weight:400;
+  color:#fff;line-height:1.1;
+}
+.feat-dish-price{
+  font-family:var(--font-d);font-size:19px;font-weight:300;
+  color:var(--gold-light);flex-shrink:0;
 }
 
-/* ── SCREENS ─────────────────────────────────────────────── */
-.screen {
-  position: absolute; inset: 0;
-  will-change: transform, opacity;
-  transition: transform 0.6s var(--ease-out-expo), opacity 0.6s ease;
+/* ── CATEGORIES ──────────────────────────────────────────── */
+.cats{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(180deg,rgba(6,6,6,.97) 82%,transparent);
+  padding:11px 26px 13px;
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  animation:fin .6s ease .4s both;
+}
+.cats-row{
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.cats-row::-webkit-scrollbar{display:none}
+.cat{
+  flex-shrink:0;
+  font-family:var(--font-b);font-size:11px;font-weight:400;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text-muted);
+  padding:7px 16px;border-radius:40px;
+  border:.5px solid rgba(255,255,255,.08);
+  background:transparent;cursor:pointer;white-space:nowrap;
+  transition:all .28s ease;
+}
+.cat.active{
+  color:#080400;background:var(--gold);
+  border-color:var(--gold);font-weight:500;
 }
 
-#home-screen { z-index: 1; }
-#dish-screen { z-index: 2; transform: translateY(100%); opacity: 0; pointer-events: none; }
-#dish-screen.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+/* ── GRID ────────────────────────────────────────────────── */
+.grid-wrap{
+  position:relative;z-index:2;
+  padding:6px 26px calc(100px + var(--safe-b));
+}
+.grid-sec-label{
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:4px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:14px;margin-top:4px;
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* ── GLOBAL NOISE TEXTURE ─────────────────────────────────── */
-.noise-layer {
-  position: absolute; inset: 0; pointer-events: none; z-index: 100;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 256px;
+/* ── CARD ────────────────────────────────────────────────── */
+.card{
+  position:relative;border-radius:16px;overflow:hidden;
+  cursor:pointer;border:.5px solid rgba(255,255,255,.07);
+  aspect-ratio:3/4;
+  opacity:0;transform:translateY(22px) scale(.97);
+  transition:opacity .55s ease,transform .55s var(--expo),box-shadow .3s ease;
+  will-change:transform,opacity;
+}
+.card.in{opacity:1;transform:translateY(0) scale(1)}
+.card:active{transform:scale(.95)!important;opacity:.88!important}
+
+.card-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s ease}
+.card:active .card-img{transform:scale(1.07)}
+.card-bg{position:absolute;inset:0}
+.card-emoji{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:50px;opacity:.11;filter:grayscale(1) brightness(1.6);
+}
+.card-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 18%,rgba(0,0,0,.35) 52%,rgba(0,0,0,.9) 84%,rgba(0,0,0,.97) 100%);
+}
+.card-shim{
+  position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.045) 50%,transparent 65%);
+  background-size:200% 100%;
+  animation:shim 3s ease-in-out infinite;
+}
+.card-vdot{
+  position:absolute;top:9px;left:9px;
+  width:7px;height:7px;border-radius:50%;border:1.5px solid;
+}
+.vdot-v{background:#4cd964;border-color:#4cd964}
+.vdot-n{background:#e74c3c;border-color:#e74c3c}
+.card-body{position:absolute;bottom:0;left:0;right:0;padding:11px 11px 13px}
+.card-cat{
+  font-family:var(--font-b);font-size:8px;font-weight:300;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);opacity:.75;display:block;margin-bottom:4px;
+}
+.card-name{
+  font-family:var(--font-d);font-size:15px;font-weight:500;
+  color:var(--cream);line-height:1.2;margin-bottom:3px;
+}
+.card-price{
+  font-family:var(--font-b);font-size:11.5px;font-weight:400;
+  color:var(--gold-light);
 }
 
-/* ══════════════════════════════════════════════════════════
-   HOME SCREEN
-══════════════════════════════════════════════════════════ */
-
-#home-screen {
-  background: var(--bg);
-  display: flex; flex-direction: column;
+/* ── HOME FOOTER ─────────────────────────────────────────── */
+.hfooter{
+  position:relative;z-index:2;text-align:center;
+  padding:0 26px calc(36px + var(--safe-b));
+}
+.hfooter-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px}
+.hfooter-dot{width:3px;height:3px;border-radius:50%;background:rgba(201,152,58,.28)}
+.hfooter-text{
+  font-family:var(--font-d);font-size:11px;font-weight:300;font-style:italic;
+  letter-spacing:3px;color:var(--text-muted);
 }
 
-/* Ambient background glow */
-.home-ambient {
-  position: absolute; inset: 0; pointer-events: none;
+/* ════════════════════════════════════════════════════════════
+   DISH SCREEN
+════════════════════════════════════════════════════════════ */
+#dish{
+  z-index:2;background:var(--bg);
+  transform:translateY(100%);opacity:0;pointer-events:none;
+  transition:transform .65s var(--expo),opacity .65s ease;
+}
+#dish.active{transform:translateY(0);opacity:1;pointer-events:all}
+
+.dish-amb{
+  position:absolute;inset:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 20%, rgba(201,152,58,0.06) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(201,152,58,0.03) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 50% 30%,rgba(201,152,58,.07) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 30% at 15% 70%,rgba(201,152,58,.03) 0%,transparent 60%);
 }
 
-/* ── HOME HEADER ──────────────────────────────────────────── */
-.home-header {
-  position: relative; z-index: 10;
-  padding: 56px 28px 0;
-  display: flex; flex-direction: column; gap: 4px;
+/* top bar */
+.dish-bar{
+  position:absolute;top:0;left:0;right:0;z-index:20;
+  padding:calc(50px + var(--safe-t)) 22px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.back{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.07);
+  border:.5px solid rgba(255,255,255,.1);
+  border-radius:40px;padding:8px 16px 8px 12px;
+  cursor:pointer;backdrop-filter:blur(16px);
+  transition:background .2s,transform .15s;
+}
+.back:active{transform:scale(.95);background:rgba(255,255,255,.12)}
+.back-arr{font-size:13px;color:rgba(255,255,255,.5)}
+.back-lbl{
+  font-family:var(--font-b);font-size:11px;font-weight:400;
+  letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);
+}
+.dish-ctr{
+  font-family:var(--font-b);font-size:11px;font-weight:300;
+  color:var(--text-muted);letter-spacing:1px;
 }
 
-.home-overline {
-  font-family: var(--font-body);
-  font-size: 10px; font-weight: 300;
-  letter-spacing: 5px; text-transform: uppercase;
-  color: var(--gold); opacity: 0.8;
+/* model area */
+.model-area{
+  position:absolute;top:0;left:0;right:0;
+  bottom:0;padding-bottom:310px;
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;
+}
+model-viewer{width:100%;height:100%;background:transparent;--poster-color:transparent}
+
+.mph{
+  position:absolute;inset:0;padding-bottom:280px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  pointer-events:none;transition:opacity .5s ease;
+}
+.mph.gone{opacity:0}
+.spin{
+  width:50px;height:50px;border-radius:50%;
+  border:1px solid rgba(201,152,58,.12);border-top-color:var(--gold);
+  animation:sp 1.1s linear infinite;
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spin-txt{
+  font-family:var(--font-b);font-size:10px;font-weight:300;
+  letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);
 }
 
-.home-title {
-  font-family: var(--font-display);
-  font-size: 32px; font-weight: 400;
-  color: var(--cream); line-height: 1.1;
-  letter-spacing: -0.3px;
+.no-model{
+  position:absolute;inset:0;padding-bottom:280px;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;pointer-events:none;
+}
+.no-model.on{display:flex}
+.no-model-icon{font-size:42px;opacity:.1}
+.no-model-txt{
+  font-family:var(--font-b);font-size:10px;font-weight:300;
+  letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);
 }
 
-.home-title em { font-style: italic; color: var(--gold-light); }
-
-.home-subtitle {
-  font-family: var(--font-body);
-  font-size: 12px; font-weight: 300;
-  color: var(--text-dim); letter-spacing: 0.3px;
-  margin-top: 6px;
+.dish-glow{
+  position:absolute;width:55%;height:28px;
+  left:50%;transform:translateX(-50%);
+  bottom:315px;
+  background:radial-gradient(ellipse,rgba(201,152,58,.13) 0%,transparent 75%);
+  filter:blur(14px);pointer-events:none;z-index:6;
 }
 
-/* ── CATEGORY TABS ────────────────────────────────────────── */
-.category-wrap {
-  position: relative; z-index: 10;
-  padding: 28px 0 0 28px;
-  display: flex; gap: 8px;
-  overflow-x: auto; scrollbar-width: none;
-}
-.category-wrap::-webkit-scrollbar { display: none; }
-
-.cat-tab {
-  flex-shrink: 0;
-  font-family: var(--font-body);
-  font-size: 12px; font-weight: 400;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 8px 16px; border-radius: 40px;
-  border: 0.5px solid rgba(255,255,255,0.08);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+/* ── BOTTOM SHEET ────────────────────────────────────────── */
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:15;
+  background:var(--panel-bg);
+  backdrop-filter:blur(30px) saturate(1.9);
+  -webkit-backdrop-filter:blur(30px) saturate(1.9);
+  border-top:.5px solid rgba(255,255,255,.08);
+  border-radius:26px 26px 0 0;
+  padding:0 22px calc(20px + var(--safe-b));
+  touch-action:none;
+  transition:transform .45s var(--expo);
+  will-change:transform;
 }
 
-.cat-tab.active {
-  color: var(--bg);
-  background: var(--gold);
-  border-color: var(--gold);
-  font-weight: 500;
+.s-handle-row{
+  display:flex;justify-content:center;
+  padding:13px 0 11px;cursor:grab;
+}
+.s-handle-row:active{cursor:grabbing}
+.s-handle{
+  width:36px;height:3.5px;border-radius:2px;
+  background:rgba(255,255,255,.13);
+  transition:background .2s,width .2s;
+}
+.s-handle-row:hover .s-handle{background:rgba(255,255,255,.24);width:44px}
+
+.s-top{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;margin-bottom:8px;
+}
+.s-name{
+  font-family:var(--font-d);font-size:22px;font-weight:500;
+  color:var(--cream);line-height:1.15;letter-spacing:-.2px;
+  flex:1;margin-right:14px;
+}
+.s-price{
+  font-family:var(--font-d);font-size:19px;font-weight:300;
+  color:var(--gold-light);flex-shrink:0;
 }
 
-/* ── CAROUSEL ─────────────────────────────────────────────── */
-.carousel-outer {
-  flex: 1; position: relative; z-index: 5;
-  display: flex; align-items: center;
-  overflow: hidden;
-  padding: 20px 0;
+/* Expand hint */
+.s-hint{
+  display:flex;align-items:center;gap:6px;
+  margin-bottom:12px;cursor:pointer;width:fit-content;
 }
-
-.carousel-track {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px 28px;
-  transition: transform 0.5s var(--ease-out-expo);
-  will-change: transform;
-  cursor: grab;
-  user-select: none;
+.s-hint-txt{
+  font-family:var(--font-b);font-size:10px;font-weight:300;
+  letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);
 }
-.carousel-track.dragging { cursor: grabbing; transition: none; }
-
-/* ── DISH CARD ────────────────────────────────────────────── */
-.dish-card {
-  flex-shrink: 0;
-  width: calc(100vw - 80px);
-  max-width: 340px;
-  height: 420px;
-  border-radius: 24px;
-  position: relative; overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.4s var(--ease-out-expo), opacity 0.4s ease;
-  will-change: transform, opacity;
-  border: 0.5px solid rgba(255,255,255,0.08);
+.s-hint-arr{
+  font-size:11px;color:var(--gold);opacity:.55;
+  transition:transform .3s var(--expo);display:inline-block;
 }
+.s-hint-arr.up{transform:rotate(180deg)}
 
-.dish-card.side { transform: scale(0.88); opacity: 0.5; }
-.dish-card.active-card { transform: scale(1); opacity: 1; }
-
-/* Card image area */
-.card-img {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center;
-  transition: transform 0.6s ease;
+/* Expandable */
+.s-expand{
+  overflow:hidden;
+  max-height:0;opacity:0;
+  transition:max-height .42s var(--expo),opacity .3s ease;
 }
-.dish-card:active .card-img { transform: scale(1.03); }
-.card-img.has-photo + .card-overlay {
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,0.08) 0%,
-    rgba(0,0,0,0.15) 35%,
-    rgba(0,0,0,0.82) 72%,
-    rgba(0,0,0,0.96) 100%
-  );
-}
+.s-expand.open{max-height:240px;opacity:1}
 
-/* Card overlay gradient */
-.card-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,0.05) 0%,
-    rgba(0,0,0,0.1) 40%,
-    rgba(0,0,0,0.75) 75%,
-    rgba(0,0,0,0.92) 100%
-  );
+.s-desc{
+  font-family:var(--font-b);font-size:12px;font-weight:300;
+  line-height:1.72;color:rgba(245,240,232,.44);margin-bottom:12px;
 }
-
-/* Card content */
-.card-content {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 24px 22px 22px;
+.s-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.s-tag{
+  font-family:var(--font-b);font-size:9px;font-weight:400;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;border:.5px solid;
 }
+.tv{color:#6fcf8a;border-color:rgba(111,207,138,.3);background:rgba(111,207,138,.07)}
+.td{color:#e8b84b;border-color:rgba(232,184,75,.3);background:rgba(232,184,75,.07)}
+.ts{color:#ff7b54;border-color:rgba(255,123,84,.3);background:rgba(255,123,84,.07)}
+.tg{color:#88c0d0;border-color:rgba(136,192,208,.3);background:rgba(136,192,208,.07)}
+.tn{color:#d4a0ff;border-color:rgba(212,160,255,.3);background:rgba(212,160,255,.07)}
 
-.card-category-badge {
-  display: inline-block;
-  font-family: var(--font-body);
-  font-size: 9px; font-weight: 400;
-  letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--gold);
-  border: 0.5px solid rgba(201,152,58,0.4);
-  background: rgba(201,152,58,0.1);
-  padding: 4px 10px; border-radius: 20px;
-  margin-bottom: 10px;
+/* AR button */
+.ar{
+  width:100%;height:52px;
+  border:none;border-radius:14px;
+  background:linear-gradient(135deg,#c9983a 0%,#e8b84b 50%,#c9983a 100%);
+  background-size:200% 100%;background-position:100% 0;
+  color:#080300;
+  font-family:var(--font-b);font-size:14px;font-weight:500;letter-spacing:.4px;
+  cursor:pointer;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .15s ease,box-shadow .2s ease;
+  box-shadow:0 6px 32px rgba(201,152,58,.26),0 1px 0 rgba(255,255,255,.1) inset;
+  flex-shrink:0;margin-top:4px;
 }
-
-.card-name {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 500;
-  color: var(--cream); line-height: 1.15;
-  letter-spacing: -0.2px;
-  margin-bottom: 6px;
+.ar:active{transform:scale(.97);box-shadow:0 3px 14px rgba(201,152,58,.18)}
+.ar::before{
+  content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  animation:bshim 3.5s ease-in-out infinite 1.2s;
 }
+@keyframes bshim{0%{left:-100%}35%,100%{left:130%}}
+.ar-icon{font-size:15px}
+.ar-lbl{position:relative;z-index:1}
 
-.card-price {
-  font-family: var(--font-body);
-  font-size: 14px; font-weight: 400;
-  color: var(--gold-light); letter-spacing: 0.3px;
+/* ── KEYFRAMES ───────────────────────────────────────────── */
+@keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+
+/* Noise */
+.noise{
+  position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.026;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
 }
-
-/* Card tap indicator */
-.card-tap-ring {
-  position: absolute; top: 18px; right: 18px;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  border: 0.5px solid rgba(255,255,255,0.15);
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(8px);
-}
-.card-tap-arrow {
-  font-size: 14px; color: rgba(255,255,255,0.7);
-  transform: rotate(-45deg);
-}
-
-/* ── HOME FOOTER ──────────────────────────────────────────── */
-.home-footer {
-  position: relative; z-index: 10;
-  padding: 0 28px 36px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-.carousel-dots { display: flex; gap: 5px; align-items: center; }
-
-.dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  transition: all 0.3s ease;
-}
-.dot.active { width: 20px; border-radius: 2px; background: var(--gold); }
-
-.swipe-hint {
-  font-family: var(--font-body);
-  font-size: 10px; font-weight: 300;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-/* Card background patterns (placeholder visuals) */
-.card-bg-1 { background: linear-gradient(135deg, #1a1008 0%, #2d1f0a 40%, #1a120a 100%); }
-.card-bg-2 { background: linear-gradient(135deg, #0a1218 0%, #0d1f1a 40%, #081410 100%); }
-.card-bg-3 { background: linear-gradient(135deg, #180a08 0%, #2a1010 40%, #1a0c0c 100%); }
-.card-bg-4 { background: linear-gradient(135deg, #10100a 0%, #1c1c0c 40%, #141008 100%); }
-.card-bg-5 { background: linear-gradient(135deg, #0a0e18 0%, #0d1428 40%, #080e1e 100%); }
-.card-bg-6 { background: linear-gradient(135deg, #120818 0%, #1e0d2a 40%, #10081e 100%); }
-.card-bg-7 { background: linear-gradient(135deg, #181008 0%, #2a1e0a 40%, #1a1208 100%); }
-.card-bg-8 { background: linear-gradient(135deg, #081018 0%, #0c1c2a 40%, #081018 100%); }
-.card-bg-9 { background: linear-gradient(135deg, #180808 0%, #2a0e0e 40%, #1a0808 100%); }
-.card-bg-10 { background: linear-gradient(135deg, #101808 0%, #182a0c 40%, #10180a 100%); }
-.card-bg-11 { background: linear-gradient(135deg, #181008 0%, #2a1c08 40%, #1a1208 100%); }
-.card-bg-12 { background: linear-gradient(135deg, #080e18 0%, #0e1828 40%, #080e18 100%); }
-
-/* Food illustration overlay per card */
-.food-illustration {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 90px; opacity: 0.15;
-  filter: grayscale(1) brightness(2);
-  pointer-events: none;
-}
-
-
-/* ══════════════════════════════════════════════════════════
-   DISH DETAIL SCREEN
-══════════════════════════════════════════════════════════ */
-
-#dish-screen {
-  background: var(--bg);
-  display: flex; flex-direction: column;
-}
-
-.dish-ambient {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 35%, rgba(201,152,58,0.08) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 30% at 20% 70%, rgba(201,152,58,0.03) 0%, transparent 60%);
-  transition: opacity 0.5s ease;
-}
-
-/* ── DISH BACK BUTTON ─────────────────────────────────────── */
-.dish-back {
-  position: absolute; top: 0; left: 0; right: 0;
-  z-index: 20;
-  padding: 52px 24px 0;
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-.back-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.1);
-  border-radius: 40px; padding: 8px 16px 8px 12px;
-  cursor: pointer; backdrop-filter: blur(12px);
-  transition: background 0.2s ease, transform 0.15s ease;
-}
-.back-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.1); }
-
-.back-arrow {
-  font-size: 14px; color: rgba(255,255,255,0.6);
-}
-.back-label {
-  font-family: var(--font-body);
-  font-size: 12px; font-weight: 400;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-}
-
-.dish-counter {
-  font-family: var(--font-body);
-  font-size: 11px; font-weight: 300;
-  color: var(--text-muted); letter-spacing: 1px;
-}
-
-/* ── MODEL VIEWER AREA ────────────────────────────────────── */
-.model-area {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  bottom: 260px;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 5;
-}
-
-model-viewer {
-  width: 100%; height: 100%;
-  background: transparent;
-  --poster-color: transparent;
-}
-
-/* Spinner / placeholder state */
-.model-placeholder {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 20px;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
-.model-placeholder.hidden { opacity: 0; }
-
-.spinner-ring {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  border: 1px solid rgba(201,152,58,0.15);
-  border-top-color: var(--gold);
-  animation: spin 1.2s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.spinner-text {
-  font-family: var(--font-body);
-  font-size: 11px; font-weight: 300;
-  letter-spacing: 3px; text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-/* Ground glow */
-.dish-ground-glow {
-  position: absolute;
-  width: 50%; height: 32px;
-  left: 50%; transform: translateX(-50%);
-  bottom: 265px;
-  background: radial-gradient(ellipse, rgba(201,152,58,0.15) 0%, transparent 75%);
-  filter: blur(12px);
-  pointer-events: none; z-index: 6;
-}
-
-/* ── DISH INFO PANEL ──────────────────────────────────────── */
-.dish-panel {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  z-index: 10;
-  height: 260px;
-  background: var(--panel-bg);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  border-top: 0.5px solid rgba(255,255,255,0.08);
-  border-radius: 28px 28px 0 0;
-  padding: 20px 24px 32px;
-  display: flex; flex-direction: column; gap: 0;
-}
-
-/* Drag handle */
-.panel-handle {
-  width: 36px; height: 3px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 2px;
-  margin: 0 auto 16px;
-}
-
-.panel-row-top {
-  display: flex; align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.dish-detail-name {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 500;
-  color: var(--cream); line-height: 1.15;
-  letter-spacing: -0.2px;
-  flex: 1; margin-right: 12px;
-}
-
-.dish-detail-price {
-  font-family: var(--font-display);
-  font-size: 20px; font-weight: 400;
-  color: var(--gold-light);
-  flex-shrink: 0; padding-top: 2px;
-}
-
-.dish-detail-desc {
-  font-family: var(--font-body);
-  font-size: 12px; font-weight: 300;
-  line-height: 1.65; color: rgba(240,235,224,0.48);
-  margin-bottom: 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.dish-tags {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.dish-tag {
-  font-family: var(--font-body);
-  font-size: 9px; font-weight: 400;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 20px;
-  border: 0.5px solid;
-}
-.tag-veg { color: #6fcf8a; border-color: rgba(111,207,138,0.3); background: rgba(111,207,138,0.08); }
-.tag-dairy { color: #e8b84b; border-color: rgba(232,184,75,0.3); background: rgba(232,184,75,0.08); }
-.tag-spicy { color: #ff7b54; border-color: rgba(255,123,84,0.3); background: rgba(255,123,84,0.08); }
-.tag-gf { color: #88c0d0; border-color: rgba(136,192,208,0.3); background: rgba(136,192,208,0.08); }
-.tag-nuts { color: #d4a0ff; border-color: rgba(212,160,255,0.3); background: rgba(212,160,255,0.08); }
-
-/* ── AR CTA BUTTON ────────────────────────────────────────── */
-.ar-btn {
-  width: 100%; height: 50px;
-  border: none; border-radius: 14px;
-  background: linear-gradient(135deg, #c9983a 0%, #e8b84b 50%, #c9983a 100%);
-  background-size: 200% 100%; background-position: 100% 0;
-  color: #0d0900;
-  font-family: var(--font-body);
-  font-size: 14px; font-weight: 500;
-  letter-spacing: 0.5px;
-  cursor: pointer; position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: transform 0.15s ease, background-position 0.4s ease, box-shadow 0.3s ease;
-  box-shadow: 0 6px 28px rgba(201,152,58,0.3);
-  margin-top: auto;
-  flex-shrink: 0;
-}
-
-.ar-btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 3px 14px rgba(201,152,58,0.2);
-}
-
-.ar-btn::before {
-  content: '';
-  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-  animation: btnShimmer 3.5s ease-in-out infinite 1s;
-}
-@keyframes btnShimmer {
-  0% { left: -100%; }
-  35%, 100% { left: 130%; }
-}
-
-.ar-btn-icon { font-size: 16px; }
-.ar-btn-text { position: relative; z-index: 1; }
-
-/* ── NO MODEL NOTICE ──────────────────────────────────────── */
-.no-model-notice {
-  position: absolute;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  text-align: center; pointer-events: none;
-  display: none;
-}
-.no-model-notice.show { display: block; }
-.no-model-big { font-size: 48px; margin-bottom: 12px; opacity: 0.15; }
-.no-model-text {
-  font-family: var(--font-body);
-  font-size: 11px; font-weight: 300;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-/* ── ENTRY ANIMATIONS ─────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.home-header { animation: fadeUp 0.8s var(--ease-out-expo) both; }
-.category-wrap { animation: fadeUp 0.8s var(--ease-out-expo) 0.1s both; }
-.carousel-outer { animation: fadeIn 0.8s ease 0.2s both; }
-.home-footer { animation: fadeUp 0.6s var(--ease-out-expo) 0.3s both; }
 
 </style>
 </head>
 <body>
-
 <div id="app">
-  <div class="noise-layer"></div>
+<div class="noise"></div>
 
-  <!-- ══ HOME SCREEN ══════════════════════════════════════ -->
-  <div id="home-screen" class="screen">
-    <div class="home-ambient"></div>
+<!-- ══ HOME ════════════════════════════════════════════════ -->
+<div id="home" class="screen">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
 
-    <div class="home-header">
-      <div class="home-overline">Est. 2024 · Fine Dining</div>
-      <h1 class="home-title">The <em>Menu</em></h1>
-      <p class="home-subtitle">Tap any dish to explore in 3D &amp; AR</p>
+  <div id="home-scroll">
+
+    <div class="hero" id="hero">
+      <div class="hero-tag" id="hero-tag">Est. 2024 · Fine Dining</div>
+      <h1 class="hero-name">Ahara <em>Menu</em></h1>
+      <p class="hero-quote" id="hero-quote">"We do not cook food.<br>We craft experiences."</p>
+      <div class="hero-rule">
+        <div class="hero-line"></div>
+        <div class="hero-dot"></div>
+        <div class="hero-line" style="background:linear-gradient(270deg,rgba(201,152,58,.35),transparent)"></div>
+      </div>
     </div>
 
-    <div class="category-wrap" id="category-wrap"></div>
-
-    <div class="carousel-outer">
-      <div class="carousel-track" id="carousel-track"></div>
+    <div class="feat-wrap">
+      <div class="feat-label">✦ &nbsp;Chef's Recommendation</div>
+      <div class="feat-card" id="feat-card">
+        <div class="feat-img" id="feat-img"></div>
+        <div class="feat-ov"></div>
+        <div class="feat-shimmer"></div>
+        <div class="feat-arrow">↗</div>
+        <div class="feat-body">
+          <div>
+            <div class="feat-badge">⭑ &nbsp;Tonight's Special</div>
+            <div class="feat-dish-name" id="feat-name">—</div>
+          </div>
+          <div class="feat-dish-price" id="feat-price">—</div>
+        </div>
+      </div>
     </div>
 
-    <div class="home-footer">
-      <div class="carousel-dots" id="carousel-dots"></div>
-      <div class="swipe-hint">Swipe to explore</div>
+    <div class="cats">
+      <div class="cats-row" id="cats-row"></div>
     </div>
+
+    <div class="grid-wrap">
+      <div class="grid-sec-label" id="grid-label">All Dishes</div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="hfooter">
+      <div class="hfooter-dots">
+        <div class="hfooter-dot"></div><div class="hfooter-dot"></div><div class="hfooter-dot"></div>
+      </div>
+      <div class="hfooter-text">Scan · Explore · Savour</div>
+    </div>
+
   </div>
-
-  <!-- ══ DISH DETAIL SCREEN ═══════════════════════════════ -->
-  <div id="dish-screen" class="screen">
-    <div class="dish-ambient" id="dish-ambient"></div>
-
-    <div class="dish-back">
-      <button class="back-btn" id="back-btn">
-        <span class="back-arrow">←</span>
-        <span class="back-label">Menu</span>
-      </button>
-      <div class="dish-counter" id="dish-counter"></div>
-    </div>
-
-    <div class="model-area" id="model-area">
-      <div class="model-placeholder" id="model-placeholder">
-        <div class="spinner-ring"></div>
-        <div class="spinner-text">Loading model</div>
-      </div>
-      <div class="no-model-notice" id="no-model-notice">
-        <div class="no-model-big">🍽</div>
-        <div class="no-model-text">3D model coming soon</div>
-      </div>
-    </div>
-
-    <div class="dish-ground-glow"></div>
-
-    <div class="dish-panel">
-      <div class="panel-handle"></div>
-      <div class="panel-row-top">
-        <div class="dish-detail-name" id="detail-name">—</div>
-        <div class="dish-detail-price" id="detail-price">—</div>
-      </div>
-      <div class="dish-detail-desc" id="detail-desc">—</div>
-      <div class="dish-tags" id="detail-tags"></div>
-      <button class="ar-btn" id="ar-btn">
-        <span class="ar-btn-icon">✦</span>
-        <span class="ar-btn-text">View on your table</span>
-      </button>
-    </div>
-  </div>
-
 </div>
+
+<!-- ══ DISH ════════════════════════════════════════════════ -->
+<div id="dish" class="screen">
+  <div class="dish-amb"></div>
+
+  <div class="dish-bar">
+    <button class="back" id="back">
+      <span class="back-arr">←</span>
+      <span class="back-lbl">Menu</span>
+    </button>
+    <div class="dish-ctr" id="dctr"></div>
+  </div>
+
+  <div class="model-area" id="marea">
+    <div class="mph" id="mph">
+      <div class="spin"></div>
+      <div class="spin-txt">Loading model</div>
+    </div>
+    <div class="no-model" id="nomod">
+      <div class="no-model-icon">🍽</div>
+      <div class="no-model-txt">3D model coming soon</div>
+    </div>
+  </div>
+
+  <div class="dish-glow"></div>
+
+  <div class="sheet" id="sheet">
+    <div class="s-handle-row" id="shandle">
+      <div class="s-handle"></div>
+    </div>
+    <div class="s-top">
+      <div class="s-name" id="sname">—</div>
+      <div class="s-price" id="sprice">—</div>
+    </div>
+    <div class="s-hint" id="shint">
+      <span class="s-hint-txt">Details &amp; allergens</span>
+      <span class="s-hint-arr" id="sarr">↑</span>
+    </div>
+    <div class="s-expand" id="sexpand">
+      <div class="s-desc" id="sdesc">—</div>
+      <div class="s-tags" id="stags"></div>
+    </div>
+    <button class="ar" id="arbtn">
+      <span class="ar-icon">✦</span>
+      <span class="ar-lbl">View on your table</span>
+    </button>
+  </div>
+</div>
+
+</div><!-- /app -->
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   MENU DATA — Edit everything below to customise
+   MENU DATA
    ═══════════════════════════════════════════════════════════
-   For each dish:
-   - name        : Dish name (string)
-   - price       : Display price (string, include currency symbol)
-   - category    : Must match one of the categories array
-   - description : 1–2 sentence description
-   - tags        : Array of tags from: 'veg','dairy','spicy','gf','nuts'
-   - imageUrl    : Path to your food photo (JPG/PNG, keep under 400KB) e.g. "images/starters/Spring-Roll.jpg"
-   - modelUrl    : Path or URL to your .glb file (leave "" until ready)
-   - iosUrl      : Path or URL to your .usdz file for iOS AR (leave "" until ready)
-   - color       : Accent colour for card background (CSS linear-gradient string)
-   - emoji       : Placeholder visual until model is ready
+   For each dish fill in:
+   - imageUrl : "final_models/snacks/Spring_roll.png"   (food photo)
+   - modelUrl : "final_models/snacks/Spring-Roll.glb"   (3D model)
+   - iosUrl   : "final_models/snacks/Spring-Roll.usdz"  (iOS AR)
+   - featured : true on ONE dish only
+   Change RESTAURANT_NAME, TAGLINE and QUOTE below too.
 */
 
-const RESTAURANT_NAME = "The Restaurant";  /* ← Change this */
-const RESTAURANT_TAGLINE = "Est. 2024 · Fine Dining"; /* ← Change this */
+const RESTAURANT_NAME = "Ahara";
+const TAGLINE         = "Est. 2024 · Fine Dining";
+const QUOTE           = "We do not cook food. We craft experiences.";
 
-const CATEGORIES = ["All", "Starters", "Mains", "Desserts", "Drinks"];
+const CATS = ["All","Starters","Mains","Desserts","Drinks"];
+
+const TAGS = {
+  veg:  {lbl:"Vegetarian",    cls:"tv"},
+  dairy:{lbl:"Contains Dairy",cls:"td"},
+  spicy:{lbl:"Spicy",         cls:"ts"},
+  gf:   {lbl:"Gluten-Free",   cls:"tg"},
+  nuts: {lbl:"Contains Nuts", cls:"tn"},
+};
 
 const MENU = [
   {
-    id: "dish-01",
-    name: "Saffron Shorba",
-    price: "₹480",
-    category: "Starters",
-    description: "Delicate broth of saffron, roasted tomato and spiced cream, finished with a thread of gold oil.",
-    tags: ["veg", "dairy"],
-    imageUrl: "final_models/snacks/spring.png",   /* ← Add your food photo path here e.g. "images/starters/Spring-Roll.jpg" */
-    modelUrl: "final_models/snacks/spring.glb",   /* ← Add your .glb URL here */
-    iosUrl: "",     /* ← Add your .usdz URL here */
-    color: "linear-gradient(145deg,#1a1008,#2d1f0a,#1a120a)",
-    emoji: "🥣"
+    id:"d01", name:"Saffron Shorba", price:"₹480", category:"Starters",
+    desc:"Delicate broth of saffron, roasted tomato and spiced cream, finished with a thread of gold oil.",
+    tags:["veg","dairy"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#1a1008,#2d1f0a)", emoji:"🥣"
   },
   {
-    id: "dish-02",
-    name: "Smoked Burrata",
-    price: "₹680",
-    category: "Starters",
-    description: "Cold-smoked burrata on charred sourdough, heirloom tomato compote, micro basil, aged balsamic.",
-    tags: ["veg", "dairy", "nuts"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#0f1208,#1c2010,#0f1208)",
-    emoji: "🧀"
+    id:"d02", name:"Smoked Burrata", price:"₹680", category:"Starters",
+    desc:"Cold-smoked burrata on charred sourdough, heirloom tomato compote, micro basil, aged balsamic.",
+    tags:["veg","dairy","nuts"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#0f1208,#1c2010)", emoji:"🧀"
   },
   {
-    id: "dish-03",
-    name: "Prawn Tikka",
-    price: "₹820",
-    category: "Starters",
-    description: "Tiger prawns marinated in smoked paprika and hung curd, finished in a tandoor, served with kokum chutney.",
-    tags: ["spicy", "dairy"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#1a0c08,#2a1410,#1a0c08)",
-    emoji: "🦐"
+    id:"d03", name:"Prawn Tikka", price:"₹820", category:"Starters",
+    desc:"Tiger prawns marinated in smoked paprika and hung curd, finished in a tandoor, served with kokum chutney.",
+    tags:["spicy","dairy"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#1a0c08,#2a1410)", emoji:"🦐"
   },
   {
-    id: "dish-04",
-    name: "Truffle Risotto",
-    price: "₹1,840",
-    category: "Mains",
-    description: "Arborio rice, aged parmigiano, black truffle shavings, 24-hour bone broth reduction.",
-    tags: ["veg", "dairy"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#14100a,#22180e,#14100a)",
-    emoji: "🍚"
+    id:"d04", name:"Truffle Risotto", price:"₹1,840", category:"Mains",
+    desc:"Arborio rice, aged parmigiano, black truffle shavings, 24-hour bone broth reduction.",
+    tags:["veg","dairy"], featured:true,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#14100a,#22180e)", emoji:"🍚"
   },
   {
-    id: "dish-05",
-    name: "Lamb Raan",
-    price: "₹2,200",
-    category: "Mains",
-    description: "Slow-roasted leg of lamb, 12-hour dum preparation, saffron jus, pomegranate raita.",
-    tags: ["spicy"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#180a08,#2a1010,#180a08)",
-    emoji: "🍖"
+    id:"d05", name:"Lamb Raan", price:"₹2,200", category:"Mains",
+    desc:"Slow-roasted leg of lamb, 12-hour dum preparation, saffron jus, pomegranate raita.",
+    tags:["spicy"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#180a08,#2a1010)", emoji:"🍖"
   },
   {
-    id: "dish-06",
-    name: "Black Cod Miso",
-    price: "₹1,980",
-    category: "Mains",
-    description: "Saikyo miso-marinated black cod, yuzu beurre blanc, pickled cucumber, sesame crisp.",
-    tags: ["dairy", "gf"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#080e18,#0c1628,#080e18)",
-    emoji: "🐟"
+    id:"d06", name:"Black Cod Miso", price:"₹1,980", category:"Mains",
+    desc:"Saikyo miso-marinated black cod, yuzu beurre blanc, pickled cucumber, sesame crisp.",
+    tags:["dairy","gf"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#080e18,#0c1628)", emoji:"🐟"
   },
   {
-    id: "dish-07",
-    name: "Wild Mushroom Dal",
-    price: "₹940",
-    category: "Mains",
-    description: "Black lentils, wild porcini, smoked butter, crispy shallots, house-made kulcha.",
-    tags: ["veg", "dairy"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#101008,#1c1c0c,#101008)",
-    emoji: "🍄"
+    id:"d07", name:"Wild Mushroom Dal", price:"₹940", category:"Mains",
+    desc:"Black lentils, wild porcini, smoked butter, crispy shallots, house-made kulcha.",
+    tags:["veg","dairy"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#101008,#1c1c0c)", emoji:"🍄"
   },
   {
-    id: "dish-08",
-    name: "Gulab Panna Cotta",
-    price: "₹520",
-    category: "Desserts",
-    description: "Rose water panna cotta, raspberry coulis, crystallised rose petals, pistachio dust.",
-    tags: ["veg", "dairy", "nuts"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#180818,#2a0e2a,#180818)",
-    emoji: "🌹"
+    id:"d08", name:"Gulab Panna Cotta", price:"₹520", category:"Desserts",
+    desc:"Rose water panna cotta, raspberry coulis, crystallised rose petals, pistachio dust.",
+    tags:["veg","dairy","nuts"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#180818,#2a0e2a)", emoji:"🌹"
   },
   {
-    id: "dish-09",
-    name: "Dark Chocolate Sphere",
-    price: "₹680",
-    category: "Desserts",
-    description: "Valrhona 70% sphere, filled with salted caramel, dissolved tableside with warm toffee sauce.",
-    tags: ["veg", "dairy"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#100808,#1c0e0e,#100808)",
-    emoji: "🍫"
+    id:"d09", name:"Chocolate Sphere", price:"₹680", category:"Desserts",
+    desc:"Valrhona 70% sphere filled with salted caramel, dissolved tableside with warm toffee sauce.",
+    tags:["veg","dairy"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#100808,#1c0e0e)", emoji:"🍫"
   },
   {
-    id: "dish-10",
-    name: "Kashmiri Kahwa",
-    price: "₹280",
-    category: "Drinks",
-    description: "Traditional green tea with saffron, cardamom, cinnamon and slivered almonds. Served hot.",
-    tags: ["veg", "nuts"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#141008,#201808,#141008)",
-    emoji: "🍵"
+    id:"d10", name:"Kashmiri Kahwa", price:"₹280", category:"Drinks",
+    desc:"Traditional green tea with saffron, cardamom, cinnamon and slivered almonds. Served hot.",
+    tags:["veg","nuts"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#141008,#201808)", emoji:"🍵"
   },
   {
-    id: "dish-11",
-    name: "Smoked Old Fashioned",
-    price: "₹680",
-    category: "Drinks",
-    description: "Bourbon, demerara, cherry bitters, smoked live with applewood under a glass cloche.",
-    tags: [],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#180e08,#281808,#180e08)",
-    emoji: "🥃"
+    id:"d11", name:"Smoked Old Fashioned", price:"₹680", category:"Drinks",
+    desc:"Bourbon, demerara, cherry bitters, smoked live with applewood under a glass cloche.",
+    tags:[], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#180e08,#281808)", emoji:"🥃"
   },
   {
-    id: "dish-12",
-    name: "Passion Fruit Lassi",
-    price: "₹320",
-    category: "Drinks",
-    description: "Whipped yoghurt, fresh passion fruit pulp, cardamom sugar, edible gold flake.",
-    tags: ["veg", "dairy"],
-    imageUrl: "",
-    modelUrl: "",
-    iosUrl: "",
-    color: "linear-gradient(145deg,#181008,#281c08,#181008)",
-    emoji: "🥤"
+    id:"d12", name:"Passion Fruit Lassi", price:"₹320", category:"Drinks",
+    desc:"Whipped yoghurt, fresh passion fruit pulp, cardamom sugar, edible gold flake.",
+    tags:["veg","dairy"], featured:false,
+    imageUrl:"", modelUrl:"", iosUrl:"",
+    color:"linear-gradient(145deg,#181008,#281c08)", emoji:"🥤"
   }
 ];
 
 /* ═══════════════════════════════════════════════════════════
-   APP STATE
+   STATE & DOM
 ═══════════════════════════════════════════════════════════ */
-const state = {
-  activeCategory: "All",
-  carouselIndex: 0,
-  filteredDishes: [],
-  activeDishId: null,
-  isDragging: false,
-  dragStartX: 0,
-  dragCurrentX: 0,
-  lastDragX: 0,
-  dragVelocity: 0,
-  currentModelViewer: null,
-};
+const ST={cat:"All",did:null,mv:null,expanded:false};
+
+const hs    = document.getElementById('home-scroll');
+const heroEl= document.getElementById('hero');
+const featC = document.getElementById('feat-card');
+const featI = document.getElementById('feat-img');
+const featN = document.getElementById('feat-name');
+const featP = document.getElementById('feat-price');
+const cRow  = document.getElementById('cats-row');
+const gridEl= document.getElementById('grid');
+const gLabel= document.getElementById('grid-label');
+const dishSc= document.getElementById('dish');
+const backEl= document.getElementById('back');
+const marea = document.getElementById('marea');
+const mphEl = document.getElementById('mph');
+const nomodEl=document.getElementById('nomod');
+const snameEl=document.getElementById('sname');
+const spriceEl=document.getElementById('sprice');
+const sdescEl=document.getElementById('sdesc');
+const stagsEl=document.getElementById('stags');
+const dctrEl= document.getElementById('dctr');
+const arbtn = document.getElementById('arbtn');
+const sheet = document.getElementById('sheet');
+const shandle=document.getElementById('shandle');
+const sexpand=document.getElementById('sexpand');
+const shint = document.getElementById('shint');
+const sarr  = document.getElementById('sarr');
 
 /* ═══════════════════════════════════════════════════════════
-   DOM REFS
+   INIT HEADER TEXT
 ═══════════════════════════════════════════════════════════ */
-const $ = id => document.getElementById(id);
-const homeScreen    = $('home-screen');
-const dishScreen    = $('dish-screen');
-const categoryWrap  = $('category-wrap');
-const carouselTrack = $('carousel-track');
-const carouselDots  = $('carousel-dots');
-const backBtn       = $('back-btn');
-const modelArea     = $('model-area');
-const modelPH       = $('model-placeholder');
-const noModelNotice = $('no-model-notice');
-const detailName    = $('detail-name');
-const detailPrice   = $('detail-price');
-const detailDesc    = $('detail-desc');
-const detailTags    = $('detail-tags');
-const arBtn         = $('ar-btn');
-const dishCounter   = $('dish-counter');
+document.title = RESTAURANT_NAME + ' — Menu';
+document.getElementById('hero-tag').textContent = TAGLINE;
+document.getElementById('hero-quote').innerHTML = `"${QUOTE}"`;
 
 /* ═══════════════════════════════════════════════════════════
-   TAG CONFIG
+   PARALLAX
 ═══════════════════════════════════════════════════════════ */
-const TAG_CONFIG = {
-  veg:   { label: 'Vegetarian', cls: 'tag-veg' },
-  dairy: { label: 'Contains Dairy', cls: 'tag-dairy' },
-  spicy: { label: 'Spicy', cls: 'tag-spicy' },
-  gf:    { label: 'Gluten-Free', cls: 'tag-gf' },
-  nuts:  { label: 'Contains Nuts', cls: 'tag-nuts' },
-};
+hs.addEventListener('scroll',()=>{
+  const y=hs.scrollTop;
+  heroEl.style.transform=`translateY(${y*.32}px)`;
+  heroEl.style.opacity=Math.max(0,1-y/200);
+},{passive:true});
 
 /* ═══════════════════════════════════════════════════════════
-   BUILD HOME
+   FEATURED
 ═══════════════════════════════════════════════════════════ */
-function buildCategories() {
-  categoryWrap.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-tab' + (cat === state.activeCategory ? ' active' : '');
-    btn.textContent = cat;
-    btn.addEventListener('click', () => selectCategory(cat));
-    categoryWrap.appendChild(btn);
+function buildFeatured(){
+  const d=MENU.find(x=>x.featured)||MENU[0];
+  if(d.imageUrl){
+    featI.style.cssText=`position:absolute;inset:0;background:url('${d.imageUrl}') center/cover`;
+  } else {
+    featI.style.cssText=`position:absolute;inset:0;background:${d.color}`;
+    featI.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.09;filter:grayscale(1) brightness(1.5)">${d.emoji}</div>`;
+  }
+  featN.textContent=d.name;
+  featP.textContent=d.price;
+  featC.onclick=()=>openDish(d);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CATEGORIES
+═══════════════════════════════════════════════════════════ */
+function buildCats(){
+  cRow.innerHTML='';
+  CATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='cat'+(c===ST.cat?' active':'');
+    b.textContent=c;
+    b.onclick=()=>{ST.cat=c;buildCats();buildGrid();};
+    cRow.appendChild(b);
   });
 }
 
-function selectCategory(cat) {
-  state.activeCategory = cat;
-  state.carouselIndex = 0;
-  buildCategories();
-  buildCarousel();
-}
+/* ═══════════════════════════════════════════════════════════
+   GRID
+═══════════════════════════════════════════════════════════ */
+function buildGrid(){
+  const dishes=ST.cat==='All'?MENU:MENU.filter(d=>d.category===ST.cat);
+  gLabel.textContent=ST.cat==='All'?'All Dishes':ST.cat;
+  gridEl.innerHTML='';
 
-function buildCarousel() {
-  state.filteredDishes = state.activeCategory === 'All'
-    ? MENU
-    : MENU.filter(d => d.category === state.activeCategory);
+  dishes.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='card';
+    el.style.transitionDelay=`${i*0.055}s`;
 
-  carouselTrack.innerHTML = '';
-  state.filteredDishes.forEach((dish, i) => {
-    const card = document.createElement('div');
-    card.className = 'dish-card ' + (i === state.carouselIndex ? 'active-card' : 'side');
-    card.dataset.index = i;
-    const hasPhoto = !!dish.imageUrl;
-    const imgStyle = hasPhoto
-      ? `background-image:url('${dish.imageUrl}');`
-      : `background:${dish.color}`;
-    card.innerHTML = `
-      <div class="card-img ${hasPhoto ? 'has-photo' : ''}" style="${imgStyle}"></div>
-      ${!hasPhoto ? `<div class="food-illustration">${dish.emoji}</div>` : ''}
-      <div class="card-overlay"></div>
-      <div class="card-tap-ring"><span class="card-tap-arrow">↗</span></div>
-      <div class="card-content">
-        <div class="card-category-badge">${dish.category}</div>
-        <div class="card-name">${dish.name}</div>
-        <div class="card-price">${dish.price}</div>
+    const hp=!!d.imageUrl;
+    const isV=d.tags.includes('veg');
+
+    el.innerHTML=`
+      ${hp?`<div class="card-img" style="background:url('${d.imageUrl}') center/cover"></div>`
+          :`<div class="card-bg" style="background:${d.color}"></div>
+            <div class="card-emoji">${d.emoji}</div>`}
+      <div class="card-shim"></div>
+      <div class="card-ov"></div>
+      <div class="card-vdot ${isV?'vdot-v':'vdot-n'}"></div>
+      <div class="card-body">
+        <span class="card-cat">${d.category}</span>
+        <div class="card-name">${d.name}</div>
+        <div class="card-price">${d.price}</div>
       </div>
     `;
-    card.addEventListener('click', () => {
-      if (Math.abs(state.dragCurrentX - state.dragStartX) < 8) {
-        openDish(dish);
-      }
+    el.onclick=()=>openDish(d);
+    gridEl.appendChild(el);
+  });
+
+  // Staggered entrance via IntersectionObserver
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}
     });
-    carouselTrack.appendChild(card);
-  });
+  },{threshold:.08,rootMargin:'0px 0px -16px 0px'});
 
-  buildDots();
-  positionCarousel(false);
-}
-
-function buildDots() {
-  carouselDots.innerHTML = '';
-  const max = Math.min(state.filteredDishes.length, 8);
-  for (let i = 0; i < max; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'dot' + (i === state.carouselIndex ? ' active' : '');
-    carouselDots.appendChild(dot);
-  }
-}
-
-function positionCarousel(animate = true) {
-  const cards = carouselTrack.querySelectorAll('.dish-card');
-  const cardW = cards[0] ? cards[0].offsetWidth : (window.innerWidth - 80);
-  const gap = 16;
-  const offset = state.carouselIndex * (cardW + gap);
-
-  if (!animate) carouselTrack.style.transition = 'none';
-  else carouselTrack.style.transition = 'transform 0.5s cubic-bezier(0.16,1,0.3,1)';
-
-  carouselTrack.style.transform = `translateX(${-offset}px)`;
-
-  cards.forEach((card, i) => {
-    card.classList.toggle('active-card', i === state.carouselIndex);
-    card.classList.toggle('side', i !== state.carouselIndex);
-  });
-
-  buildDots();
+  gridEl.querySelectorAll('.card').forEach(c=>obs.observe(c));
 }
 
 /* ═══════════════════════════════════════════════════════════
-   CAROUSEL DRAG / SWIPE
+   OPEN DISH
 ═══════════════════════════════════════════════════════════ */
-let velTracker = [];
+function openDish(d){
+  ST.did=d.id;ST.expanded=false;
+  sexpand.classList.remove('open');
+  sarr.classList.remove('up');
 
-carouselTrack.addEventListener('pointerdown', e => {
-  state.isDragging = true;
-  state.dragStartX = e.clientX;
-  state.dragCurrentX = e.clientX;
-  state.lastDragX = e.clientX;
-  velTracker = [];
-  carouselTrack.classList.add('dragging');
-  carouselTrack.setPointerCapture(e.pointerId);
-});
-
-carouselTrack.addEventListener('pointermove', e => {
-  if (!state.isDragging) return;
-  const dx = e.clientX - state.dragStartX;
-  state.dragCurrentX = e.clientX;
-
-  velTracker.push({ x: e.clientX, t: Date.now() });
-  if (velTracker.length > 5) velTracker.shift();
-
-  const cards = carouselTrack.querySelectorAll('.dish-card');
-  const cardW = cards[0] ? cards[0].offsetWidth : (window.innerWidth - 80);
-  const gap = 16;
-  const offset = state.carouselIndex * (cardW + gap);
-  carouselTrack.style.transition = 'none';
-  carouselTrack.style.transform = `translateX(${-offset + dx}px)`;
-});
-
-carouselTrack.addEventListener('pointerup', e => {
-  if (!state.isDragging) return;
-  state.isDragging = false;
-  carouselTrack.classList.remove('dragging');
-
-  const dx = e.clientX - state.dragStartX;
-  const threshold = 60;
-  const n = state.filteredDishes.length;
-
-  if (dx < -threshold && state.carouselIndex < n - 1) state.carouselIndex++;
-  else if (dx > threshold && state.carouselIndex > 0) state.carouselIndex--;
-
-  positionCarousel(true);
-});
-
-carouselTrack.addEventListener('pointercancel', () => {
-  state.isDragging = false;
-  carouselTrack.classList.remove('dragging');
-  positionCarousel(true);
-});
-
-/* ═══════════════════════════════════════════════════════════
-   OPEN DISH DETAIL
-═══════════════════════════════════════════════════════════ */
-function openDish(dish) {
-  state.activeDishId = dish.id;
-
-  /* Fill panel */
-  detailName.textContent  = dish.name;
-  detailPrice.textContent = dish.price;
-  detailDesc.textContent  = dish.description;
-
-  detailTags.innerHTML = dish.tags.map(t => {
-    const cfg = TAG_CONFIG[t];
-    return cfg ? `<span class="dish-tag ${cfg.cls}">${cfg.label}</span>` : '';
+  snameEl.textContent=d.name;
+  spriceEl.textContent=d.price;
+  sdescEl.textContent=d.desc;
+  stagsEl.innerHTML=d.tags.map(t=>{
+    const c=TAGS[t];return c?`<span class="s-tag ${c.cls}">${c.lbl}</span>`:'';
   }).join('');
 
-  /* Counter */
-  const idx = state.filteredDishes.findIndex(d => d.id === dish.id);
-  dishCounter.textContent = `${idx + 1} / ${state.filteredDishes.length}`;
+  const list=ST.cat==='All'?MENU:MENU.filter(x=>x.category===d.category);
+  const idx=list.findIndex(x=>x.id===d.id);
+  dctrEl.textContent=`${idx+1} / ${list.length}`;
 
-  /* Clear old model viewer */
-  const oldMV = modelArea.querySelector('model-viewer');
-  if (oldMV) oldMV.remove();
+  const old=marea.querySelector('model-viewer');
+  if(old)old.remove();
 
-  if (dish.modelUrl) {
-    /* Has model — show spinner, then model-viewer */
-    modelPH.classList.remove('hidden');
-    noModelNotice.classList.remove('show');
-
-    const mv = document.createElement('model-viewer');
-    mv.setAttribute('src', dish.modelUrl);
-    if (dish.iosUrl) mv.setAttribute('ios-src', dish.iosUrl);
-    mv.setAttribute('ar', '');
-    mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-    mv.setAttribute('camera-controls', '');
-    mv.setAttribute('auto-rotate', '');
-    mv.setAttribute('auto-rotate-delay', '1000');
-    mv.setAttribute('rotation-per-second', '20deg');
-    mv.setAttribute('shadow-intensity', '1.2');
-    mv.setAttribute('shadow-softness', '1');
-    mv.setAttribute('environment-image', 'neutral');
-    mv.setAttribute('exposure', '0.85');
-    mv.setAttribute('camera-orbit', '0deg 70deg 105%');
-    mv.setAttribute('min-camera-orbit', 'auto 30deg auto');
-    mv.setAttribute('max-camera-orbit', 'auto 90deg auto');
-    mv.setAttribute('disable-zoom', '');
-    mv.style.cssText = 'width:100%;height:100%;background:transparent;';
-    mv.addEventListener('load', () => { modelPH.classList.add('hidden'); });
-    modelArea.appendChild(mv);
-    state.currentModelViewer = mv;
-
+  if(d.modelUrl){
+    mphEl.classList.remove('gone');
+    nomodEl.classList.remove('on');
+    const mv=document.createElement('model-viewer');
+    mv.setAttribute('src',d.modelUrl);
+    if(d.iosUrl)mv.setAttribute('ios-src',d.iosUrl);
+    mv.setAttribute('ar','');
+    mv.setAttribute('ar-modes','webxr scene-viewer quick-look');
+    mv.setAttribute('camera-controls','');
+    mv.setAttribute('auto-rotate','');
+    mv.setAttribute('auto-rotate-delay','800');
+    mv.setAttribute('rotation-per-second','18deg');
+    mv.setAttribute('shadow-intensity','1.2');
+    mv.setAttribute('shadow-softness','1');
+    mv.setAttribute('environment-image','neutral');
+    mv.setAttribute('exposure','.88');
+    mv.setAttribute('camera-orbit','0deg 68deg 105%');
+    mv.setAttribute('min-camera-orbit','auto 25deg auto');
+    mv.setAttribute('max-camera-orbit','auto 88deg auto');
+    mv.setAttribute('disable-zoom','');
+    mv.style.cssText='width:100%;height:100%;background:transparent;';
+    mv.addEventListener('load',()=>mphEl.classList.add('gone'));
+    marea.appendChild(mv);
+    ST.mv=mv;
   } else {
-    /* No model — show placeholder state */
-    modelPH.classList.add('hidden');
-    noModelNotice.classList.add('show');
-    state.currentModelViewer = null;
+    mphEl.classList.add('gone');
+    nomodEl.classList.add('on');
+    ST.mv=null;
   }
 
-  /* Show dish screen */
-  dishScreen.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  dishSc.classList.add('active');
 }
 
 /* ═══════════════════════════════════════════════════════════
-   CLOSE DISH — return to exact carousel position
+   CLOSE DISH
 ═══════════════════════════════════════════════════════════ */
-backBtn.addEventListener('click', () => {
-  dishScreen.classList.remove('active');
-  noModelNotice.classList.remove('show');
-  modelPH.classList.remove('hidden');
-  const oldMV = modelArea.querySelector('model-viewer');
-  if (oldMV) oldMV.remove();
-  state.currentModelViewer = null;
+backEl.addEventListener('click',()=>{
+  dishSc.classList.remove('active');
+  nomodEl.classList.remove('on');
+  mphEl.classList.remove('gone');
+  const old=marea.querySelector('model-viewer');
+  if(old)old.remove();
+  ST.mv=null;
+  sheet.style.transform='';
+});
+
+/* ═══════════════════════════════════════════════════════════
+   EXPAND / COLLAPSE
+═══════════════════════════════════════════════════════════ */
+function toggleExpand(){
+  ST.expanded=!ST.expanded;
+  sexpand.classList.toggle('open',ST.expanded);
+  sarr.classList.toggle('up',ST.expanded);
+}
+shint.addEventListener('click',toggleExpand);
+
+/* Sheet drag */
+let sdy0=0;
+shandle.addEventListener('pointerdown',e=>{
+  sdy0=e.clientY;
+  sheet.style.transition='none';
+  shandle.setPointerCapture(e.pointerId);
+});
+shandle.addEventListener('pointermove',e=>{
+  const dy=e.clientY-sdy0;
+  if(Math.abs(dy)<4)return;
+  sheet.style.transform=`translateY(${Math.max(-180,Math.min(90,dy))}px)`;
+});
+shandle.addEventListener('pointerup',e=>{
+  const dy=e.clientY-sdy0;
+  sheet.style.transition='';
+  sheet.style.transform='';
+  if(dy<-40&&!ST.expanded)toggleExpand();
+  else if(dy>40&&ST.expanded)toggleExpand();
+});
+shandle.addEventListener('pointercancel',()=>{
+  sheet.style.transition='';sheet.style.transform='';
 });
 
 /* ═══════════════════════════════════════════════════════════
    AR BUTTON
 ═══════════════════════════════════════════════════════════ */
-arBtn.addEventListener('click', () => {
-  const dish = MENU.find(d => d.id === state.activeDishId);
-  if (!dish) return;
+arbtn.addEventListener('click',()=>{
+  const d=MENU.find(x=>x.id===ST.did);
+  if(!d)return;
+  arbtn.style.transform='scale(.97)';
+  setTimeout(()=>arbtn.style.transform='',150);
 
-  /* Scale feedback */
-  arBtn.style.transform = 'scale(0.97)';
-  setTimeout(() => { arBtn.style.transform = ''; }, 150);
-
-  if (!dish.modelUrl) {
-    arBtn.querySelector('.ar-btn-text').textContent = 'Model coming soon';
-    setTimeout(() => {
-      arBtn.querySelector('.ar-btn-text').textContent = 'View on your table';
-    }, 2000);
+  if(!d.modelUrl){
+    const lbl=arbtn.querySelector('.ar-lbl');
+    lbl.textContent='Model coming soon';
+    setTimeout(()=>lbl.textContent='View on your table',2200);
     return;
   }
-
-  const ua = navigator.userAgent;
-
-  if (state.currentModelViewer) {
-    /* Use model-viewer's built-in AR activation */
-    state.currentModelViewer.activateAR();
-  } else if (/iPhone|iPad/i.test(ua) && dish.iosUrl) {
-    const a = document.createElement('a');
-    a.rel = 'ar'; a.href = dish.iosUrl;
-    const img = document.createElement('img');
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-    a.appendChild(img); document.body.appendChild(a);
-    a.click(); document.body.removeChild(a);
+  if(ST.mv){ST.mv.activateAR();return;}
+  if(/iPhone|iPad/i.test(navigator.userAgent)&&d.iosUrl){
+    const a=document.createElement('a');
+    a.rel='ar';a.href=d.iosUrl;
+    const img=document.createElement('img');
+    img.src='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+    a.appendChild(img);document.body.appendChild(a);
+    a.click();document.body.removeChild(a);
   } else {
-    const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(dish.modelUrl)}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(dish.modelUrl)};end;`;
-    window.location.href = intent;
+    window.location.href=`intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(d.modelUrl)}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(d.modelUrl)};end;`;
   }
 });
 
 /* ═══════════════════════════════════════════════════════════
-   HASH ROUTING — deep link to a dish via #dish/dish-id
+   HASH ROUTING
 ═══════════════════════════════════════════════════════════ */
-function handleHash() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#dish/')) {
-    const id = hash.replace('#dish/', '');
-    const dish = MENU.find(d => d.id === id);
-    if (dish) {
-      state.activeCategory = dish.category;
-      state.filteredDishes = MENU.filter(d => d.category === dish.category);
-      state.carouselIndex = state.filteredDishes.findIndex(d => d.id === id);
-      buildCategories();
-      buildCarousel();
-      setTimeout(() => openDish(dish), 100);
-    }
-  }
+function handleHash(){
+  const h=location.hash;
+  if(!h.startsWith('#dish/'))return;
+  const id=h.replace('#dish/','');
+  const d=MENU.find(x=>x.id===id);
+  if(!d)return;
+  ST.cat=d.category;buildCats();buildGrid();
+  setTimeout(()=>openDish(d),120);
 }
+window.addEventListener('hashchange',handleHash);
 
-window.addEventListener('hashchange', handleHash);
-
-/* ═══════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════ */
-buildCategories();
-buildCarousel();
+/* ── BOOT ────────────────────────────────────────────────── */
+buildFeatured();
+buildCats();
+buildGrid();
 handleHash();
-
-/* Update restaurant name in document */
-document.title = RESTAURANT_NAME + ' — Menu';
-
 </script>
 </body>
 </html>
