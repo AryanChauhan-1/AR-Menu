@@ -310,14 +310,14 @@ html,body{width:100%;height:100%;background:#060606;overflow:hidden;overscroll-b
 /* model area */
 .model-area{
   position:absolute;top:0;left:0;right:0;
-  bottom:0;padding-bottom:310px;
+  bottom:0;padding-bottom:88px;
   display:flex;align-items:center;justify-content:center;
   z-index:5;
 }
 model-viewer{width:100%;height:100%;background:transparent;--poster-color:transparent}
 
 .mph{
-  position:absolute;inset:0;padding-bottom:280px;
+  position:absolute;inset:0;padding-bottom:80px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
   pointer-events:none;transition:opacity .5s ease;
 }
@@ -334,7 +334,7 @@ model-viewer{width:100%;height:100%;background:transparent;--poster-color:transp
 }
 
 .no-model{
-  position:absolute;inset:0;padding-bottom:280px;
+  position:absolute;inset:0;padding-bottom:80px;
   display:none;flex-direction:column;
   align-items:center;justify-content:center;gap:10px;pointer-events:none;
 }
@@ -348,83 +348,177 @@ model-viewer{width:100%;height:100%;background:transparent;--poster-color:transp
 .dish-glow{
   position:absolute;width:55%;height:28px;
   left:50%;transform:translateX(-50%);
-  bottom:315px;
+  bottom:85px;
   background:radial-gradient(ellipse,rgba(201,152,58,.13) 0%,transparent 75%);
   filter:blur(14px);pointer-events:none;z-index:6;
 }
 
-/* ── BOTTOM SHEET ────────────────────────────────────────── */
-.sheet{
+/* ── FLOATING AR BUTTON ──────────────────────────────────── */
+.ar-float{
+  position:absolute;
+  right:20px;
+  bottom:calc(90px + var(--safe-b));
+  z-index:16;
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,#c9983a,#e8b84b);
+  border:none;border-radius:40px;
+  padding:10px 16px 10px 13px;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(201,152,58,.32),0 1px 0 rgba(255,255,255,.12) inset;
+  transition:transform .18s var(--expo),box-shadow .18s ease,opacity .18s ease;
+  overflow:hidden;
+}
+.ar-float:active{transform:scale(.94);box-shadow:0 2px 10px rgba(201,152,58,.2)}
+.ar-float::before{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  animation:bshim 4s ease-in-out infinite 1.5s;
+}
+@keyframes bshim{0%{left:-100%}35%,100%{left:130%}}
+.ar-float-icon{
+  font-size:14px;color:#0a0500;position:relative;z-index:1;
+  line-height:1;
+}
+.ar-float-lbl{
+  font-family:var(--font-b);font-size:12px;font-weight:500;
+  color:#0a0500;letter-spacing:.3px;
+  position:relative;z-index:1;white-space:nowrap;
+}
+
+/* ── INFO STRIP ──────────────────────────────────────────── */
+.info-strip{
   position:absolute;left:0;right:0;bottom:0;z-index:15;
   background:var(--panel-bg);
-  backdrop-filter:blur(30px) saturate(1.9);
-  -webkit-backdrop-filter:blur(30px) saturate(1.9);
-  border-top:.5px solid rgba(255,255,255,.08);
-  border-radius:26px 26px 0 0;
-  padding:0 22px calc(20px + var(--safe-b));
-  touch-action:none;
-  transition:transform .45s var(--expo);
+  backdrop-filter:blur(28px) saturate(1.8);
+  -webkit-backdrop-filter:blur(28px) saturate(1.8);
+  border-top:.5px solid rgba(255,255,255,.07);
+  border-radius:22px 22px 0 0;
+  padding:14px 20px calc(14px + var(--safe-b));
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  transition:transform .5s var(--expo),opacity .4s ease;
+}
+
+.strip-left{flex:1;min-width:0}
+.strip-name{
+  font-family:var(--font-d);font-size:20px;font-weight:500;
+  color:var(--cream);line-height:1.1;letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.strip-price{
+  font-family:var(--font-d);font-size:15px;font-weight:300;
+  color:var(--gold-light);margin-top:2px;
+}
+
+.info-btn{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.06);
+  border:.5px solid rgba(255,255,255,.12);
+  border-radius:40px;padding:8px 14px;
+  cursor:pointer;
+  transition:background .2s,transform .15s;
+  white-space:nowrap;
+}
+.info-btn:active{transform:scale(.95);background:rgba(255,255,255,.1)}
+.info-btn-icon{font-size:12px;color:var(--gold);opacity:.8}
+.info-btn-lbl{
+  font-family:var(--font-b);font-size:10px;font-weight:400;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(245,240,232,.5);
+}
+
+/* ── INFO MODAL ──────────────────────────────────────────── */
+.modal-backdrop{
+  position:absolute;inset:0;z-index:25;
+  background:rgba(0,0,0,0);
+  pointer-events:none;
+  transition:background .4s ease;
+}
+.modal-backdrop.open{
+  background:rgba(0,0,0,.55);
+  pointer-events:all;
+}
+
+.info-modal{
+  position:absolute;left:0;right:0;bottom:0;z-index:26;
+  background:rgba(10,10,10,.97);
+  backdrop-filter:blur(36px) saturate(2);
+  -webkit-backdrop-filter:blur(36px) saturate(2);
+  border-top:.5px solid rgba(255,255,255,.09);
+  border-radius:28px 28px 0 0;
+  padding:0 22px calc(28px + var(--safe-b));
+  transform:translateY(100%);
+  transition:transform .52s var(--expo);
   will-change:transform;
 }
+.info-modal.open{transform:translateY(0)}
 
-.s-handle-row{
-  display:flex;justify-content:center;
-  padding:13px 0 11px;cursor:grab;
+/* Modal handle */
+.modal-handle-row{
+  display:flex;justify-content:center;padding:16px 0 18px;
 }
-.s-handle-row:active{cursor:grabbing}
-.s-handle{
-  width:36px;height:3.5px;border-radius:2px;
-  background:rgba(255,255,255,.13);
-  transition:background .2s,width .2s;
+.modal-handle{
+  width:38px;height:3px;border-radius:2px;
+  background:rgba(255,255,255,.15);
 }
-.s-handle-row:hover .s-handle{background:rgba(255,255,255,.24);width:44px}
 
-.s-top{
+/* Modal header */
+.modal-header{
   display:flex;align-items:flex-start;
-  justify-content:space-between;margin-bottom:8px;
+  justify-content:space-between;
+  margin-bottom:6px;
 }
-.s-name{
-  font-family:var(--font-d);font-size:22px;font-weight:500;
-  color:var(--cream);line-height:1.15;letter-spacing:-.2px;
+.modal-name{
+  font-family:var(--font-d);font-size:26px;font-weight:500;
+  color:var(--cream);line-height:1.1;letter-spacing:-.3px;
   flex:1;margin-right:14px;
 }
-.s-price{
-  font-family:var(--font-d);font-size:19px;font-weight:300;
-  color:var(--gold-light);flex-shrink:0;
+.modal-price{
+  font-family:var(--font-d);font-size:22px;font-weight:300;
+  color:var(--gold-light);flex-shrink:0;padding-top:2px;
 }
 
-/* Expand hint */
-.s-hint{
-  display:flex;align-items:center;gap:6px;
-  margin-bottom:12px;cursor:pointer;width:fit-content;
+/* Category badge */
+.modal-cat-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--gold);border:.5px solid rgba(201,152,58,.28);
+  background:rgba(201,152,58,.08);
+  padding:4px 11px;border-radius:20px;
+  margin-bottom:18px;
 }
-.s-hint-txt{
-  font-family:var(--font-b);font-size:10px;font-weight:300;
-  letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);
-}
-.s-hint-arr{
-  font-size:11px;color:var(--gold);opacity:.55;
-  transition:transform .3s var(--expo);display:inline-block;
-}
-.s-hint-arr.up{transform:rotate(180deg)}
 
-/* Expandable */
-.s-expand{
-  overflow:hidden;
-  max-height:0;opacity:0;
-  transition:max-height .42s var(--expo),opacity .3s ease;
+/* Divider */
+.modal-div{
+  height:.5px;
+  background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);
+  margin-bottom:18px;
 }
-.s-expand.open{max-height:240px;opacity:1}
 
-.s-desc{
-  font-family:var(--font-b);font-size:12px;font-weight:300;
-  line-height:1.72;color:rgba(245,240,232,.44);margin-bottom:12px;
+/* Description */
+.modal-desc-label{
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:8px;
 }
-.s-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.s-tag{
+.modal-desc{
+  font-family:var(--font-d);font-size:15px;font-weight:300;font-style:italic;
+  line-height:1.75;color:rgba(245,240,232,.6);
+  margin-bottom:22px;
+}
+
+/* Tags */
+.modal-tags-label{
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:10px;
+}
+.modal-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px}
+.m-tag{
   font-family:var(--font-b);font-size:9px;font-weight:400;
   letter-spacing:1.5px;text-transform:uppercase;
-  padding:4px 10px;border-radius:20px;border:.5px solid;
+  padding:5px 12px;border-radius:20px;border:.5px solid;
 }
 .tv{color:#6fcf8a;border-color:rgba(111,207,138,.3);background:rgba(111,207,138,.07)}
 .td{color:#e8b84b;border-color:rgba(232,184,75,.3);background:rgba(232,184,75,.07)}
@@ -432,29 +526,42 @@ model-viewer{width:100%;height:100%;background:transparent;--poster-color:transp
 .tg{color:#88c0d0;border-color:rgba(136,192,208,.3);background:rgba(136,192,208,.07)}
 .tn{color:#d4a0ff;border-color:rgba(212,160,255,.3);background:rgba(212,160,255,.07)}
 
-/* AR button */
-.ar{
-  width:100%;height:52px;
-  border:none;border-radius:14px;
-  background:linear-gradient(135deg,#c9983a 0%,#e8b84b 50%,#c9983a 100%);
-  background-size:200% 100%;background-position:100% 0;
-  color:#080300;
-  font-family:var(--font-b);font-size:14px;font-weight:500;letter-spacing:.4px;
-  cursor:pointer;position:relative;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:transform .15s ease,box-shadow .2s ease;
-  box-shadow:0 6px 32px rgba(201,152,58,.26),0 1px 0 rgba(255,255,255,.1) inset;
-  flex-shrink:0;margin-top:4px;
+/* Nutrition / extras row */
+.modal-extras{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  margin-bottom:22px;
 }
-.ar:active{transform:scale(.97);box-shadow:0 3px 14px rgba(201,152,58,.18)}
-.ar::before{
-  content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
-  animation:bshim 3.5s ease-in-out infinite 1.2s;
+.modal-extra-item{
+  background:rgba(255,255,255,.03);
+  border:.5px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:12px 14px;
 }
-@keyframes bshim{0%{left:-100%}35%,100%{left:130%}}
-.ar-icon{font-size:15px}
-.ar-lbl{position:relative;z-index:1}
+.extra-label{
+  font-family:var(--font-b);font-size:9px;font-weight:300;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:4px;
+}
+.extra-val{
+  font-family:var(--font-d);font-size:16px;font-weight:400;
+  color:rgba(245,240,232,.7);
+}
+
+/* Close row */
+.modal-close-row{
+  display:flex;justify-content:center;
+}
+.modal-close{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.05);
+  border:.5px solid rgba(255,255,255,.1);
+  border-radius:40px;padding:10px 22px;
+  cursor:pointer;
+  transition:background .2s,transform .15s;
+  font-family:var(--font-b);font-size:11px;font-weight:400;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(245,240,232,.4);
+}
+.modal-close:active{transform:scale(.96);background:rgba(255,255,255,.09)}
 
 /* ── KEYFRAMES ───────────────────────────────────────────── */
 @keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
@@ -553,26 +660,46 @@ model-viewer{width:100%;height:100%;background:transparent;--poster-color:transp
 
   <div class="dish-glow"></div>
 
-  <div class="sheet" id="sheet">
-    <div class="s-handle-row" id="shandle">
-      <div class="s-handle"></div>
+  <!-- Floating AR button -->
+  <button class="ar-float" id="arbtn">
+    <span class="ar-float-icon">✦</span>
+    <span class="ar-float-lbl">View in AR</span>
+  </button>
+
+  <!-- Slim info strip -->
+  <div class="info-strip" id="info-strip">
+    <div class="strip-left">
+      <div class="strip-name" id="sname">—</div>
+      <div class="strip-price" id="sprice">—</div>
     </div>
-    <div class="s-top">
-      <div class="s-name" id="sname">—</div>
-      <div class="s-price" id="sprice">—</div>
-    </div>
-    <div class="s-hint" id="shint">
-      <span class="s-hint-txt">Details &amp; allergens</span>
-      <span class="s-hint-arr" id="sarr">↑</span>
-    </div>
-    <div class="s-expand" id="sexpand">
-      <div class="s-desc" id="sdesc">—</div>
-      <div class="s-tags" id="stags"></div>
-    </div>
-    <button class="ar" id="arbtn">
-      <span class="ar-icon">✦</span>
-      <span class="ar-lbl">View on your table</span>
+    <button class="info-btn" id="info-btn">
+      <span class="info-btn-icon">✦</span>
+      <span class="info-btn-lbl">Details</span>
     </button>
+  </div>
+
+  <!-- Modal backdrop -->
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+
+  <!-- Detailed info modal -->
+  <div class="info-modal" id="info-modal">
+    <div class="modal-handle-row">
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-header">
+      <div class="modal-name" id="modal-name">—</div>
+      <div class="modal-price" id="modal-price">—</div>
+    </div>
+    <div class="modal-cat-badge" id="modal-cat">—</div>
+    <div class="modal-div"></div>
+    <div class="modal-desc-label">About this dish</div>
+    <div class="modal-desc" id="modal-desc">—</div>
+    <div class="modal-tags-label">Dietary info</div>
+    <div class="modal-tags" id="modal-tags"></div>
+    <div class="modal-extras" id="modal-extras"></div>
+    <div class="modal-close-row">
+      <button class="modal-close" id="modal-close">✕ &nbsp;Close</button>
+    </div>
   </div>
 </div>
 
@@ -694,33 +821,36 @@ const MENU = [
 /* ═══════════════════════════════════════════════════════════
    STATE & DOM
 ═══════════════════════════════════════════════════════════ */
-const ST={cat:"All",did:null,mv:null,expanded:false};
+const ST={cat:"All",did:null,mv:null,modalOpen:false};
 
-const hs    = document.getElementById('home-scroll');
-const heroEl= document.getElementById('hero');
-const featC = document.getElementById('feat-card');
-const featI = document.getElementById('feat-img');
-const featN = document.getElementById('feat-name');
-const featP = document.getElementById('feat-price');
-const cRow  = document.getElementById('cats-row');
-const gridEl= document.getElementById('grid');
-const gLabel= document.getElementById('grid-label');
-const dishSc= document.getElementById('dish');
-const backEl= document.getElementById('back');
-const marea = document.getElementById('marea');
-const mphEl = document.getElementById('mph');
-const nomodEl=document.getElementById('nomod');
-const snameEl=document.getElementById('sname');
-const spriceEl=document.getElementById('sprice');
-const sdescEl=document.getElementById('sdesc');
-const stagsEl=document.getElementById('stags');
-const dctrEl= document.getElementById('dctr');
-const arbtn = document.getElementById('arbtn');
-const sheet = document.getElementById('sheet');
-const shandle=document.getElementById('shandle');
-const sexpand=document.getElementById('sexpand');
-const shint = document.getElementById('shint');
-const sarr  = document.getElementById('sarr');
+const hs      = document.getElementById('home-scroll');
+const heroEl  = document.getElementById('hero');
+const featC   = document.getElementById('feat-card');
+const featI   = document.getElementById('feat-img');
+const featN   = document.getElementById('feat-name');
+const featP   = document.getElementById('feat-price');
+const cRow    = document.getElementById('cats-row');
+const gridEl  = document.getElementById('grid');
+const gLabel  = document.getElementById('grid-label');
+const dishSc  = document.getElementById('dish');
+const backEl  = document.getElementById('back');
+const marea   = document.getElementById('marea');
+const mphEl   = document.getElementById('mph');
+const nomodEl = document.getElementById('nomod');
+const snameEl = document.getElementById('sname');
+const spriceEl= document.getElementById('sprice');
+const dctrEl  = document.getElementById('dctr');
+const arbtn   = document.getElementById('arbtn');
+const infoBtn = document.getElementById('info-btn');
+const infoBD  = document.getElementById('modal-backdrop');
+const infoMod = document.getElementById('info-modal');
+const modalNm = document.getElementById('modal-name');
+const modalPr = document.getElementById('modal-price');
+const modalCt = document.getElementById('modal-cat');
+const modalDs = document.getElementById('modal-desc');
+const modalTg = document.getElementById('modal-tags');
+const modalEx = document.getElementById('modal-extras');
+const modalCl = document.getElementById('modal-close');
 
 /* ═══════════════════════════════════════════════════════════
    INIT HEADER TEXT
@@ -815,16 +945,10 @@ function buildGrid(){
    OPEN DISH
 ═══════════════════════════════════════════════════════════ */
 function openDish(d){
-  ST.did=d.id;ST.expanded=false;
-  sexpand.classList.remove('open');
-  sarr.classList.remove('up');
+  ST.did=d.id;
 
   snameEl.textContent=d.name;
   spriceEl.textContent=d.price;
-  sdescEl.textContent=d.desc;
-  stagsEl.innerHTML=d.tags.map(t=>{
-    const c=TAGS[t];return c?`<span class="s-tag ${c.cls}">${c.lbl}</span>`:'';
-  }).join('');
 
   const list=ST.cat==='All'?MENU:MENU.filter(x=>x.category===d.category);
   const idx=list.findIndex(x=>x.id===d.id);
@@ -870,47 +994,69 @@ function openDish(d){
    CLOSE DISH
 ═══════════════════════════════════════════════════════════ */
 backEl.addEventListener('click',()=>{
+  closeModal();
   dishSc.classList.remove('active');
   nomodEl.classList.remove('on');
   mphEl.classList.remove('gone');
   const old=marea.querySelector('model-viewer');
   if(old)old.remove();
   ST.mv=null;
-  sheet.style.transform='';
 });
 
 /* ═══════════════════════════════════════════════════════════
-   EXPAND / COLLAPSE
+   INFO MODAL
 ═══════════════════════════════════════════════════════════ */
-function toggleExpand(){
-  ST.expanded=!ST.expanded;
-  sexpand.classList.toggle('open',ST.expanded);
-  sarr.classList.toggle('up',ST.expanded);
+function openModal(d){
+  ST.modalOpen=true;
+  // Fill modal
+  modalNm.textContent=d.name;
+  modalPr.textContent=d.price;
+  modalCt.textContent=d.category;
+  modalDs.textContent=d.desc;
+  modalTg.innerHTML=d.tags.map(t=>{
+    const cfg=TAGS[t];
+    return cfg?`<span class="m-tag ${cfg.cls}">${cfg.lbl}</span>`:'';
+  }).join('');
+  // Extras grid — serve time, spice level, portion
+  const spiceMap={spicy:'🌶 Spicy',veg:'🌿 Mild'};
+  const spice=d.tags.includes('spicy')?'Spicy':'Mild';
+  const isV=d.tags.includes('veg');
+  modalEx.innerHTML=`
+    <div class="modal-extra-item">
+      <div class="extra-label">Type</div>
+      <div class="extra-val">${isV?'Vegetarian':'Non-Veg'}</div>
+    </div>
+    <div class="modal-extra-item">
+      <div class="extra-label">Heat level</div>
+      <div class="extra-val">${spice}</div>
+    </div>
+    <div class="modal-extra-item">
+      <div class="extra-label">Portion</div>
+      <div class="extra-val">Serves 1</div>
+    </div>
+    <div class="modal-extra-item">
+      <div class="extra-label">Serve time</div>
+      <div class="extra-val">12–18 min</div>
+    </div>
+  `;
+  infoBD.classList.add('open');
+  // Small delay so backdrop fades first then modal slides — feels smoother
+  requestAnimationFrame(()=>requestAnimationFrame(()=>infoMod.classList.add('open')));
 }
-shint.addEventListener('click',toggleExpand);
 
-/* Sheet drag */
-let sdy0=0;
-shandle.addEventListener('pointerdown',e=>{
-  sdy0=e.clientY;
-  sheet.style.transition='none';
-  shandle.setPointerCapture(e.pointerId);
+function closeModal(){
+  ST.modalOpen=false;
+  infoMod.classList.remove('open');
+  infoBD.classList.remove('open');
+}
+
+infoBtn.addEventListener('click',()=>{
+  const d=MENU.find(x=>x.id===ST.did);
+  if(d)openModal(d);
 });
-shandle.addEventListener('pointermove',e=>{
-  const dy=e.clientY-sdy0;
-  if(Math.abs(dy)<4)return;
-  sheet.style.transform=`translateY(${Math.max(-180,Math.min(90,dy))}px)`;
-});
-shandle.addEventListener('pointerup',e=>{
-  const dy=e.clientY-sdy0;
-  sheet.style.transition='';
-  sheet.style.transform='';
-  if(dy<-40&&!ST.expanded)toggleExpand();
-  else if(dy>40&&ST.expanded)toggleExpand();
-});
-shandle.addEventListener('pointercancel',()=>{
-  sheet.style.transition='';sheet.style.transform='';
-});
+
+infoBD.addEventListener('click',closeModal);
+modalCl.addEventListener('click',closeModal);
 
 /* ═══════════════════════════════════════════════════════════
    AR BUTTON
@@ -922,9 +1068,9 @@ arbtn.addEventListener('click',()=>{
   setTimeout(()=>arbtn.style.transform='',150);
 
   if(!d.modelUrl){
-    const lbl=arbtn.querySelector('.ar-lbl');
-    lbl.textContent='Model coming soon';
-    setTimeout(()=>lbl.textContent='View on your table',2200);
+    const lbl=arbtn.querySelector('.ar-float-lbl');
+    lbl.textContent='Coming soon';
+    setTimeout(()=>lbl.textContent='View in AR',2200);
     return;
   }
   if(ST.mv){ST.mv.activateAR();return;}
